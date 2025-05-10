@@ -1,9 +1,18 @@
+from django.utils.text import slugify
 from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True, default=1)
+    slug = models.SlugField(unique=True, blank = True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
+    
 
 class Size(models.Model):
     name = models.CharField(max_length=10)  # e.g. S, M, L, XL, 32, 42
@@ -20,7 +29,8 @@ class Color(models.Model):
 
 class Product(models.Model):
     categories = models.ManyToManyField(Category, related_name='products')
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
     image = models.ImageField(upload_to='product_images/', blank=True)
     description = models.CharField(max_length=255)
     detailed_description = models.TextField(max_length=1000, default="detailed description")
@@ -31,5 +41,10 @@ class Product(models.Model):
     sizes = models.ManyToManyField(Size, blank=True)
     colors = models.ManyToManyField(Color, blank=True)
     
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
