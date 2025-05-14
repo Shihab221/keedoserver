@@ -1,5 +1,6 @@
 from django.utils.text import slugify
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True, default=1)
@@ -33,7 +34,7 @@ class Product(models.Model):
     slug = models.SlugField(unique=True, blank=True, null=True)
     image = models.ImageField(upload_to='product_images/', blank=True)
     description = models.CharField(max_length=255)
-    detailed_description = models.TextField(max_length=1000, default="detailed description")
+    detailed_description = CKEditor5Field("Description", config_name="extends", blank=True, null=True)
     regular_price = models.DecimalField(max_digits=6, decimal_places=2)
     discounted_price = models.DecimalField(max_digits=6, decimal_places=2)
     stock = models.PositiveIntegerField()
